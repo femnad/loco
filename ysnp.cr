@@ -1,6 +1,7 @@
 require "yaml"
 
 NAME = "ysnp"
+MENU_DISPLAYER = "profit"
 PRINCIPAL_SPECIFIER = "login"
 PRINCIPAL_PRIORITIES = ["email", "username"]
 
@@ -26,7 +27,10 @@ def get_principal(pass_aux_lines)
   pass_info = parsed.as_h
 
   if pass_info.has_key?(PRINCIPAL_SPECIFIER)
-    return doc[PRINCIPAL_SPECIFIER]
+    puts pass_info
+    principal = pass_info[PRINCIPAL_SPECIFIER]
+    puts principal
+    return pass_info[principal]
   end
 
   PRINCIPAL_PRIORITIES.each{ |principal|
@@ -63,15 +67,16 @@ def perform_operation(operation, pass_secret)
 end
 
 def usage
-  puts "usage: #{NAME} <operation> <secret>"
+  puts "usage: #{NAME} <operation>"
 end
 
 def get_operation(args)
-  if args.size != 2
+  if args.size != 1
     usage
     exit 1
   end
-  operation, secret = args
+  operation = args[0]
+  secret = `#{MENU_DISPLAYER}`
   perform_operation(operation, secret)
 end
 
