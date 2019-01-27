@@ -6,7 +6,7 @@ PRINCIPAL_SPECIFIER = "login"
 PRINCIPAL_PRIORITIES = ["email", "username"]
 
 def get_secret_lines(pass_name)
-  `pass show #{pass_name}`.split('\n')
+  `pass show #{pass_name}`.strip.split('\n')
 end
 
 def get_password(pass_name)
@@ -19,7 +19,7 @@ def get_principal(pass_aux_lines)
   end
 
   if pass_aux_lines.size == 1
-    return pass_aux_lines[1].split(": ")[-1]
+    return pass_aux_lines[0].split(": ")[-1]
   end
 
   doc = pass_aux_lines.join('\n')
