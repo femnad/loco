@@ -68,7 +68,7 @@ def render_volume
     empty = full_size - filled
     size = full_size + PADDING
     x_position = get_x_position(size)
-    `echo '#{volume} ^fg(#191970)^r(#{filled}x30)^fg(#dcdcdc)^r(#{empty}x30)' | dzen2 -ta left -xs 1 -p 1 -w #{size} -x #{x_position} -y #{Y_POSITION}`
+    `echo '#{volume} ^fg(#191970)^r(#{filled}x30)^fg(#dcdcdc)^r(#{empty}x30)' | dzen2 -xs 1 -p 1 -w #{size} -x #{x_position} -y #{Y_POSITION}`
 end
 
 def main()
