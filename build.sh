@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-targets=(ysnp zenv)
+targets=(tosm ysnp zenv)
 
 for target in ${targets[@]}; do
     echo "Building $target"

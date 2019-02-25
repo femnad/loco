@@ -55,12 +55,12 @@ def perform_operation(operation, pass_secret)
     `pass -c #{pass_secret}`
   when "type"
     password = get_password(pass_secret)
-    `xdotool type #{password}`
+    `xdotool type '#{password}'`
   when "login-tab-pass"
     principal, password = get_principal_and_password(pass_secret)
     `xdotool type #{principal}`
     `xdotool key Tab`
-    `xdotool type #{password}`
+    `xdotool type '#{password}'`
   else
     raise "Unrecognised operation #{operation}"
   end
