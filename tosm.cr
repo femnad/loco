@@ -31,10 +31,10 @@ def update_mode(new_mode)
   updated.close
 end
 
-def update_xinput(mode)
+def update_xinput(mode, device)
   scroller_button = SCROLLER[mode]
-  `xinput set-prop "pointer:ELECOM ELECOM TrackBall Mouse" 'libinput Button Scrolling Button' #{scroller_button}`
-  `xinput set-prop "pointer:ELECOM ELECOM TrackBall Mouse" 'libinput Scroll Method Enabled' 0 0 1`
+  `xinput set-prop "pointer:#{device}" 'libinput Button Scrolling Button' #{scroller_button}`
+  `xinput set-prop "pointer:#{device}" 'libinput Scroll Method Enabled' 0 0 1`
 end
 
 def notify(active_mode)
@@ -42,8 +42,13 @@ def notify(active_mode)
 end
 
 def main
+  if ARGV.size != 1
+    puts "usage: tosm <device-name>"
+    exit 1
+  end
+  device = ARGV[0]
   next_mode = get_next
-  update_xinput(next_mode)
+  update_xinput(next_mode, device)
   update_mode(next_mode)
   notify(next_mode)
 end
