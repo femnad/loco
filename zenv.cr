@@ -59,7 +59,7 @@ def do_get_volume
 end
 
 def render_volume
-    volume = get_volume
+    volume = do_get_volume
     full_size = FULL_SIZE
     if volume > 100
         full_size += 100
