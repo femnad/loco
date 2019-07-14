@@ -1,0 +1,13 @@
+name: loco
+
+version: 0.1.0
+
+crystal: 0.29.0
+
+targets:
+  tosm:
+    main: tosm.cr
+  ysnp:
+    main: ysnp.cr
+  zenv:
+    main: zenv.cr
