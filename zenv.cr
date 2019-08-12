@@ -55,7 +55,7 @@ def render_volume
     boosted = boosting ? " [boosted]" : ""
     filled = volume * 2
     percentage = filled.to_f / full_size * 100
-    `notify-send -a volume -u low -h int:value:#{percentage} 'Volume#{boosted}'`
+    `notify-send -a progressable -u low -h int:value:#{percentage} 'Volume#{boosted}'`
 end
 
 def main()
