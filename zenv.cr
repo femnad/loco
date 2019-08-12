@@ -1,19 +1,4 @@
 FULL_SIZE = 200
-MARGIN = 10
-PADDING = 80
-Y_POSITION = 30
-
-def get_x_and_y()
-    xdpyinfo_output = `xdpyinfo`
-    lines = xdpyinfo_output.split('\n')
-    lines.each{ |line|
-        match_data = /([0-9]+x[0-9]+) pixels/.match(line)
-        if !match_data.nil?
-            return match_data[1].split('x').map{|s| s.to_i}
-        end
-    }
-    raise "can't determine resolution"
-end
 
 def get_operation(arg)
     case arg
@@ -28,7 +13,8 @@ end
 
 def run_operation()
     if ARGV.size == 0
-        raise "Not enough arguments"
+        puts "Not enough arguments"
+        exit 1
     end
     operation = get_operation(ARGV[0])
     `pamixer -#{operation} --allow-boost`
@@ -61,14 +47,15 @@ end
 def render_volume
     volume = do_get_volume
     full_size = FULL_SIZE
+    boosting = false
     if volume > 100
+        boosting = true
         full_size += 100
     end
+    boosted = boosting ? " [boosted]" : ""
     filled = volume * 2
-    empty = full_size - filled
-    size = full_size + PADDING
-    x_position = get_x_position(size)
-    `echo '#{volume} ^fg(#191970)^r(#{filled}x30)^fg(#dcdcdc)^r(#{empty}x30)' | dzen2 -xs 1 -p 1 -w #{size} -x #{x_position} -y #{Y_POSITION}`
+    percentage = filled.to_f / full_size * 100
+    `notify-send -a volume -u low -h int:value:#{percentage} 'Volume#{boosted}'`
 end
 
 def main()
