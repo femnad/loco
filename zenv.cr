@@ -46,16 +46,14 @@ end
 
 def render_volume
     volume = do_get_volume
-    full_size = FULL_SIZE
     boosting = false
     if volume > 100
         boosting = true
-        full_size += 100
+        volume = volume - 100
+        boost_level = (volume / 100 + 1) * 100
     end
-    boosted = boosting ? " [boosted]" : ""
-    filled = volume * 2
-    percentage = filled.to_f / full_size * 100
-    `notify-send -a progressable -u low -h int:value:#{percentage} 'Volume#{boosted}'`
+    boosted = boosting ? " [#{boost_level}% boosted]" : ""
+    `notify-send -a progressable -u low -h int:value:#{volume} 'Volume#{boosted}'`
 end
 
 def main()
