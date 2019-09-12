@@ -19,8 +19,11 @@
     - name: Build the image
       docker_image:
         build:
+          args:
+            version: '{{ version }}'
+          nocache: '{{ nocache | default(omit) }}'
           path: .
-          pull: no
+          pull: true
         name: loco:{{ version }}
         source: build
 
@@ -40,22 +43,30 @@
       command: docker cp loco:/root/loco/{{ item }} bin
       loop: '{{ binaries }}'
 
+    - name: Copy the binaries to home bin
+      command: docker cp loco:/root/loco/{{ item }} {{ ansible_user_dir }}/bin
+      loop: '{{ binaries }}'
+      tags: homebin
+
     - name: Stop the container
       docker_container:
         state: absent
         name: loco
 
     - name: Check existing versions
-      shell: git tag | grep 0.3.0
+      shell: git tag | grep {{ version }}
       register: exists
       failed_when: exists.rc not in [0, 1]
+      tags: release
 
     - name: Tag the version
       command: git tag {{ version }}
       when: exists.rc == 1
+      tags: release
 
     - name: Push the tags
       command: git push --tags
+      tags: release
 
     - name: Build the message file
       shell: |
@@ -64,12 +75,15 @@
         do
           echo "$binary: $(sha256sum bin/$binary | awk '{print $1}')" >> {{ message_file }}
         done
+      tags: release
 
     - name: Create a release
       command: hub release create {{ '-a bin/' + ' -a bin/'.join(binaries) }} -F release.txt {{ version }}
+      tags: release
 
     - name: Remove the message file
       file:
         name: '{{ message_file }}'
         state: absent
+      tags: release
 ...
