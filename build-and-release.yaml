@@ -3,6 +3,7 @@
   name: Build loco binaries
 
   vars:
+    message_file: release.txt
     version: '{{ version_cmd.stdout }}'
     binaries:
       - bakl
@@ -56,14 +57,19 @@
     - name: Push the tags
       command: git push --tags
 
-    - name: Build the message
+    - name: Build the message file
       shell: |
+        echo "{{ version }}\n" > {{ message_file }}
         for binary in {{ ' '.join(binaries) }}
         do
-          echo $binary: $(sha256sum bin/$binary | awk '{print $1}')
+          echo "$binary: $(sha256sum bin/$binary | awk '{print $1}')" >> {{ message_file }}
         done
-      register: checksums
 
     - name: Create a release
-      command: hub release create {{ '-a bin/' + ' -a bin/'.join(binaries) }} -m '{{ checksums.stdout }}' {{ version }}
+      command: hub release create {{ '-a bin/' + ' -a bin/'.join(binaries) }} -F release.txt {{ version }}
+
+    - name: Remove the message file
+      file:
+        name: '{{ message_file }}'
+        state: absent
 ...
