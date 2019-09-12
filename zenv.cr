@@ -50,9 +50,9 @@ def render_volume
     if volume > 100
         boosting = true
         volume = volume - 100
-        boost_level = (volume / 100 + 1) * 100
+        boost_level = (volume / 100 + 1)
     end
-    boosted = boosting ? " [#{boost_level}% boosted]" : ""
+    boosted = boosting ? " [#{boost_level}X boost]" : ""
     `notify-send -a progressable -u low -h int:value:#{volume} 'Volume#{boosted}'`
 end
 

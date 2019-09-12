@@ -1,0 +1,69 @@
+---
+- hosts: loco
+  name: Build loco binaries
+
+  vars:
+    version: '{{ version_cmd.stdout }}'
+    binaries:
+      - bakl
+      - tosm
+      - ysnp
+      - zenv
+
+  tasks:
+    - name: Get version
+      shell: grep version shard.yml | awk '{print $2}'
+      register: version_cmd
+
+    - name: Build the image
+      docker_image:
+        build:
+          path: .
+          pull: no
+        name: loco:{{ version }}
+        source: build
+
+    - name: Run the image
+      docker_container:
+        image: loco:{{ version }}
+        name: loco
+        entrypoint: cat
+        tty: true
+
+    - name: Ensure directory for binaries
+      file:
+        name: bin
+        state: directory
+
+    - name: Copy the binaries
+      command: docker cp loco:/root/loco/{{ item }} bin
+      loop: '{{ binaries }}'
+
+    - name: Stop the container
+      docker_container:
+        state: absent
+        name: loco
+
+    - name: Check existing versions
+      shell: git tag | grep 0.3.0
+      register: exists
+      failed_when: exists.rc not in [0, 1]
+
+    - name: Tag the version
+      command: git tag {{ version }}
+      when: exists.rc == 1
+
+    - name: Push the tags
+      command: git push --tags
+
+    - name: Build the message
+      shell: |
+        for binary in {{ ' '.join(binaries) }}
+        do
+          echo $binary: $(sha256sum bin/$binary | awk '{print $1}')
+        done
+      register: checksums
+
+    - name: Create a release
+      command: hub release create {{ '-a bin/' + ' -a bin/'.join(binaries) }} -m '{{ checksums.stdout }}' {{ version }}
+...
