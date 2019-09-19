@@ -1,4 +1,4 @@
-STEP_SIZE = 5
+STEP_SIZE = 1
 
 def main
     if ARGV.size == 0
