@@ -1,6 +1,12 @@
-STEP_SIZE = 1
+require "option_parser"
+
+operation = "noop"
+step_size = 1
 
 def main
+    OptionParser.parse! do |parser|
+        parser.on("-inc", "--increase", "Increases brightness") { operation = "increase" }
+    end
     if ARGV.size == 0
         puts "Not enough arguments"
         exit 1
