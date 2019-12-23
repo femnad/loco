@@ -29,12 +29,11 @@ def get_principal(pass_aux_lines)
   pass_info = {} of String => String
   pass_aux_lines.each{ |line|
       key, value = line.split(": ")
+      pass_info[key] = value
   }
 
   if pass_info.has_key?(PRINCIPAL_SPECIFIER)
-    puts pass_info
     principal = pass_info[PRINCIPAL_SPECIFIER]
-    puts principal
     return pass_info[principal]
   end
 
