@@ -1,2 +1,2 @@
 [loco]
-127.0.1.1 ansible_connection=local ansible_python_interpreter=/home/femnad/.venv/ansible/bin/python
+127.0.1.1 ansible_connection=local
