@@ -48,7 +48,7 @@ def clone_if_git_repo(item)
         basename = basename[0..-5]
     end
 
-    clone_path = Path[CLONE_PATH].expand(home: ENV["HOME"])
+    clone_path = CLONE_PATH.sub("~", ENV["HOME"])
     repo_path = "#{clone_path.to_s}/#{basename}"
 
     if File.directory?(repo_path)

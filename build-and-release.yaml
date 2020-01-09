@@ -7,6 +7,7 @@
     version: '{{ version_cmd.stdout }}'
     binaries:
       - bakl
+      - clom
       - tosm
       - ysnp
       - zenv
@@ -70,7 +71,7 @@
 
     - name: Build the message file
       shell: |
-        echo "{{ version }}\n" > {{ message_file }}
+        echo -e "{{ version }}\n" > {{ message_file }}
         for binary in {{ ' '.join(binaries) }}
         do
           echo "$binary: $(sha256sum bin/$binary | awk '{print $1}')" >> {{ message_file }}

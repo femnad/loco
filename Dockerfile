@@ -4,16 +4,16 @@ from alpine:edge
 arg version
 
 run apk update
-run apk add crystal musl-dev yaml-dev
+run apk add crystal musl-dev shards yaml-dev
 
 run mkdir /root/loco
-copy bakl.cr /root/loco
-copy tosm.cr /root/loco
-copy ysnp.cr /root/loco
-copy zenv.cr /root/loco
+copy *.cr /root/loco/
+copy shard.yml /root/loco/
 
 workdir /root/loco
-run crystal build --static bakl.cr
-run crystal build --static tosm.cr
-run crystal build --static ysnp.cr
-run crystal build --static zenv.cr
+run shards install
+run crystal build --release --static bakl.cr
+run crystal build --release --static clom.cr
+run crystal build --release --static tosm.cr
+run crystal build --release --static ysnp.cr
+run crystal build --release --static zenv.cr
