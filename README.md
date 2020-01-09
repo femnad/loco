@@ -17,3 +17,9 @@ Password typer for [pass](https://www.passwordstore.org/).
 ## zenv
 
 Change the volume and show progress via notification.
+
+## clom
+
+Clipboard watcher for git repos, courtesy of [clipnotify](clipnotify):
+
+[clipnotify]: https://github.com/cdown/clipnotify
