@@ -15,3 +15,6 @@ targets:
     main: ysnp.cr
   zenv:
     main: zenv.cr
+dependencies:
+  admiral:
+    github: jwaldrip/admiral.cr
