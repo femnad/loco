@@ -54,10 +54,12 @@ def clone_if_git_repo(item)
     if File.directory?(repo_path)
         Dir.cd(repo_path)
         notify "Updating #{repo}"
-        `git fetch`
+        `git pull -r`
+        notify "Updated #{repo}"
     else
         notify "Cloning #{repo}"
         `git clone -q #{repo} #{repo_path}`
+        notify "Cloned #{repo}"
     end
 end
 
@@ -65,7 +67,7 @@ def clone_loop
     puts "Started clone loop"
     loop do
         `clipnotify`
-        clipboard_item=`xclip -o`
+        clipboard_item=`xsel -b`
         clone_if_git_repo clipboard_item
     end
 end
