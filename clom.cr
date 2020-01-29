@@ -1,5 +1,8 @@
+require "system/user"
+
 require "admiral"
 
+CLIPMENU_MAJOR_VERSION=5
 CLONE_PATH="~/z/gl"
 PROG="clom"
 REPO_REGEX=%r<(^https|git)://git(hub|lab)\.com/[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+(\.git)?$>
@@ -63,13 +66,35 @@ def clone_if_git_repo(item)
     end
 end
 
+def get_last_line(filename)
+    file = File.new(filename)
+    offset = -2
+    line = ""
+    while true
+        file.seek(offset, IO::Seek::End)
+        offset -= 1
+        c = file.gets(1)
+        if c == "\n" || c.nil?
+            break
+        end
+
+        line += c
+    end
+    if line.size == 0
+        return nil
+    end
+    tokens = line.reverse.split(/\s+/)
+    if tokens.size < 2
+        return nil
+    end
+    return tokens[1]
+end
+
 def clone_loop
     puts "Started clone loop"
-    loop do
-        `clipnotify`
-        clipboard_item=`xsel -b`
-        clone_if_git_repo clipboard_item
-    end
+    username = ENV["USER"]
+    user = System::User.find_by name: username
+    puts get_last_line("/run/user/#{user.id}/clipmenu.#{CLIPMENU_MAJOR_VERSION}.#{user.name}/line_cache_clipboard")
 end
 
 Clom.run
