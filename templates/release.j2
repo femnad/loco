@@ -1,0 +1,5 @@
+{{ version }}
+
+{% for binary in binaries %}
+{{ binary }}: {{ lookup('file', 'bin/' + binary) | hash('sha256') }}
+{% endfor %}

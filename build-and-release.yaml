@@ -70,12 +70,9 @@
       tags: release
 
     - name: Build the message file
-      shell: |
-        echo -e "{{ version }}\n" > {{ message_file }}
-        for binary in {{ ' '.join(binaries) }}
-        do
-          echo "$binary: $(sha256sum bin/$binary | awk '{print $1}')" >> {{ message_file }}
-        done
+      template:
+        src: release.j2
+        dest: '{{ message_file }}'
       tags: release
 
     - name: Create a release
