@@ -14,7 +14,7 @@
 
   tasks:
     - name: Get version
-      shell: grep version shard.yml | awk '{print $2}'
+      shell: "grep -E '^version: [0-9.]+$' shard.yml | awk '{print $2}'"
       register: version_cmd
 
     - name: Build the image
