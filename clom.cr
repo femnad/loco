@@ -3,10 +3,10 @@ require "system/user"
 require "admiral"
 require "inotify"
 
-CLIPMENU_MAJOR_VERSION=5
-CLONE_PATH="~/z/gl"
-PROG="clom"
-REPO_REGEX=%r<(^https|git)://git(hub|lab)\.com/[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+(\.git)?$>
+CLIPMENU_MAJOR_VERSION = 5
+CLONE_PATH = "~/z/gl"
+PROG = "clom"
+REPO_REGEX = %r<(^https|git)://git(hub|lab)\.com/[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+(\.git)?$>
 
 class Clom < Admiral::Command
     class CloneLoop < Admiral::Command
@@ -58,7 +58,7 @@ def clone_if_git_repo(item)
     if File.directory?(repo_path)
         Dir.cd(repo_path)
         notify "Updating #{repo}"
-        `git pull -r`
+        `git pull -qr`
         notify "Updated #{repo}"
     else
         notify "Cloning #{repo}"
