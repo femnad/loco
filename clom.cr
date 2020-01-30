@@ -1,6 +1,7 @@
 require "system/user"
 
 require "admiral"
+require "inotify"
 
 CLIPMENU_MAJOR_VERSION=5
 CLONE_PATH="~/z/gl"
@@ -87,14 +88,40 @@ def get_last_line(filename)
     if tokens.size < 2
         return nil
     end
+    file.close
     return tokens[1]
+end
+
+def watch_cache_file(filename, channel)
+    watcher = Inotify.watch filename do |event|
+        last_line = get_last_line(filename)
+        if !last_line.nil?
+            channel.send(last_line)
+        end
+    end
+end
+
+def get_cache_file_name
+    username = ENV["USER"]
+    user = System::User.find_by name: username
+    default_cache = "/run/user/#{user.id}/clipmenu.#{CLIPMENU_MAJOR_VERSION}.#{user.name}/line_cache_clipboard"
+    if File.directory? default_cache
+        return default_cache
+    end
+    "#{user.home_directory}/.cache/clipmenu/clipmenu.#{CLIPMENU_MAJOR_VERSION}.#{user.name}/line_cache_clipboard"
 end
 
 def clone_loop
     puts "Started clone loop"
-    username = ENV["USER"]
-    user = System::User.find_by name: username
-    puts get_last_line("/run/user/#{user.id}/clipmenu.#{CLIPMENU_MAJOR_VERSION}.#{user.name}/line_cache_clipboard")
+    filename = get_cache_file_name
+    channel = Channel(String).new
+    spawn do
+        watch_cache_file(filename, channel)
+    end
+    loop do
+        line = channel.receive
+        clone_if_git_repo line
+    end
 end
 
 Clom.run

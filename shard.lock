@@ -4,3 +4,7 @@ shards:
     github: jwaldrip/admiral.cr
     version: 1.9.0
 
+  inotify:
+    github: petoem/inotify.cr
+    version: 1.0.1
+
