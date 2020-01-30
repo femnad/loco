@@ -25,7 +25,7 @@ class Clom < Admiral::Command
     end
 
     define_help description: "clom: monitor clipboard for repos to clone"
-    define_version "0.5.0"
+    define_version "0.5.5"
 
     register_sub_command clone_loop : CloneLoop, description: "Run the clone loop"
     register_sub_command one_shot : OneShot, description: "Clone if the argument is a repo"
@@ -101,14 +101,59 @@ def watch_cache_file(filename, channel)
     end
 end
 
-def get_cache_file_name
+def get_current_user
     username = ENV["USER"]
-    user = System::User.find_by name: username
-    default_cache = "/run/user/#{user.id}/clipmenu.#{CLIPMENU_MAJOR_VERSION}.#{user.name}/line_cache_clipboard"
-    if File.directory? default_cache
-        return default_cache
+    System::User.find_by name: username
+end
+
+def read_cm_dir_env(pid)
+    env = File.open("/proc/#{pid}/environ") do |file|
+        file.gets_to_end
     end
-    "#{user.home_directory}/.cache/clipmenu/clipmenu.#{CLIPMENU_MAJOR_VERSION}.#{user.name}/line_cache_clipboard"
+    cm_dir_env = env.split('\0').select{|s| !/CM_DIR/.match(s).nil?}
+    unless cm_dir_env.empty?
+        return cm_dir_env[0].split('=')[-1]
+    end
+end
+
+def get_last_cmdline_arg(pid)
+    content = File.open("/proc/#{pid}/cmdline") do |file|
+        file.gets_to_end
+    end
+    cmds = content.split('\0').reject{|s| s.empty?}
+    if cmds.empty?
+        return nil
+    end
+    cmds[-1]
+end
+
+def get_cm_dir_env
+    Dir.new("/proc").entries.each do |entry|
+        unless /[0-9]+/.match entry
+            next
+        end
+
+        last_cmd = get_last_cmdline_arg(entry)
+        if last_cmd.nil?
+            next
+        end
+
+        if /.*clipmenud$/.match last_cmd
+            return read_cm_dir_env entry
+        end
+    end
+end
+
+def get_cache_file_name
+    user = get_current_user
+    cm_dir = get_cm_dir_env
+
+    cache_root = if cm_dir.nil?
+                     "/run/user/#{user.id}"
+                 else
+                     cm_dir
+                 end
+    "#{cache_root}/clipmenu.#{CLIPMENU_MAJOR_VERSION}.#{user.name}/line_cache_clipboard"
 end
 
 def clone_loop

@@ -1,10 +1,9 @@
-from alpine:edge
+from alpine:3.11.3
 
 # intended for selectively disabling caching
 arg version
 
-run apk update
-run apk add crystal musl-dev shards yaml-dev
+run apk add --no-cache crystal musl-dev shards yaml-dev
 
 run mkdir /root/loco
 copy *.cr /root/loco/
