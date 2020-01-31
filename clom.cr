@@ -25,7 +25,7 @@ class Clom < Admiral::Command
     end
 
     define_help description: "clom: monitor clipboard for repos to clone"
-    define_version "0.5.5"
+    define_version "0.5.6"
 
     register_sub_command clone_loop : CloneLoop, description: "Run the clone loop"
     register_sub_command one_shot : OneShot, description: "Clone if the argument is a repo"
@@ -117,7 +117,11 @@ def read_cm_dir_env(pid)
 end
 
 def get_last_cmdline_arg(pid)
-    content = File.open("/proc/#{pid}/cmdline") do |file|
+    cmdline_file = "/proc/#{pid}/cmdline"
+    unless File.exists? cmdline_file
+        return nil
+    end
+    content = File.open(cmdline_file) do |file|
         file.gets_to_end
     end
     cmds = content.split('\0').reject{|s| s.empty?}
