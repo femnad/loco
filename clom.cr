@@ -39,6 +39,19 @@ def notify(msg)
     `notify-send #{PROG} '#{msg}'`
 end
 
+def ensure_repo(repo_path, repo)
+    if File.directory?(repo_path)
+        Dir.cd(repo_path)
+        notify "Updating #{repo}"
+        `git pull -qr`
+        notify "Updated #{repo}"
+    else
+        notify "Cloning #{repo}"
+        `git clone -q #{repo} #{repo_path}`
+        notify "Cloned #{repo}"
+    end
+end
+
 def clone_if_git_repo(item)
     repo = REPO_REGEX.match(item)
     if repo.nil?
@@ -55,15 +68,8 @@ def clone_if_git_repo(item)
     clone_path = CLONE_PATH.sub("~", ENV["HOME"])
     repo_path = "#{clone_path.to_s}/#{basename}"
 
-    if File.directory?(repo_path)
-        Dir.cd(repo_path)
-        notify "Updating #{repo}"
-        `git pull -qr`
-        notify "Updated #{repo}"
-    else
-        notify "Cloning #{repo}"
-        `git clone -q #{repo} #{repo_path}`
-        notify "Cloned #{repo}"
+    spawn do
+        ensure_repo(repo_path, repo)
     end
 end
 
