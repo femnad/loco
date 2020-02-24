@@ -6,7 +6,7 @@ require "inotify"
 CLIPMENU_MAJOR_VERSION = 5
 CLONE_PATH = "~/z/gl"
 PROG = "clom"
-REPO_REGEX = %r<(^https|git)://git(hub|lab)\.com/[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+(\.git)?$>
+REPO_REGEX = %r<^(https://|git@)git(hub|lab)\.com(/|:)[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+(\.git)?$>
 
 class Clom < Admiral::Command
     class CloneLoop < Admiral::Command
