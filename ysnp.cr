@@ -57,6 +57,14 @@ def copy_password(pass_secret)
     `pass -c #{pass_secret}`
 end
 
+def type_string(string)
+    `xdotool type #{string}`
+end
+
+def type_key(key)
+    `xdotool key #{key}`
+end
+
 def type_password(pass_secret)
     password = get_password(pass_secret)
     `xdotool type '#{password}'`
@@ -74,10 +82,18 @@ def type_login(pass_secret)
     `xdotool type #{principal}`
 end
 
+def type_password_tab_password(pass_secret)
+    password = get_password(pass_secret)
+    type_string password
+    type_key "Tab"
+    type_string password
+end
+
 OPERATION_MAP = {
     "copy" => ->copy_password(String),
     "login-tab-pass" => ->type_login_and_password(String),
     "login" => ->type_login(String),
+    "pass-tab-pass" => ->type_password_tab_password(String),
     "type" => ->type_password(String),
 }
 
