@@ -1,13 +1,13 @@
 FULL_SIZE = 200
 
-def get_operation(arg)
-    case arg
+def get_operation(op, step)
+    case op
     when "inc", "dec"
-        "#{arg[0]} 1"
+        "#{op[0]} #{step}"
     when "toggle"
         't'
     else
-        raise "unknown operation #{arg}"
+        raise "unknown operation #{op}"
     end
 end
 
@@ -16,7 +16,8 @@ def run_operation()
         puts "Not enough arguments"
         exit 1
     end
-    operation = get_operation(ARGV[0])
+    step = ARGV.size == 1 ? 1 : ARGV[1]
+    operation = get_operation(ARGV[0], step)
     `pamixer -#{operation} --allow-boost`
 end
 
@@ -49,8 +50,8 @@ def render_volume
     boosting = false
     if volume > 100
         boosting = true
+        boost_level = volume // 100
         volume = volume - 100
-        boost_level = (volume / 100 + 1)
     end
     boosted = boosting ? " [#{boost_level}x boost]" : ""
     `notify-send -a progressable -u low -h int:value:#{volume} 'Volume#{boosted}'`
